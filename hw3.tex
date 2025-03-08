@@ -1,0 +1,358 @@
+\documentclass{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\usepackage{amsmath,amsfonts,amssymb,amsthm,commath,dsfont}
+\usepackage{enumitem}
+\usepackage{framed}
+\usepackage{xspace}
+\usepackage{microtype}
+\usepackage{float}
+\usepackage[round]{natbib}
+\bibliographystyle{plainnat}
+\usepackage{cleveref}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage[breakable]{tcolorbox}
+\tcbset{breakable}
+\usepackage{mathtools}
+\usepackage{caption}
+\usepackage{subcaption}
+\def\b1{\boldsymbol{1}}
+
+\newcommand{\colbar}{\rule[-3mm]{.3mm}{1.5em}}
+\newcommand{\rowbar}{\rule[.5ex]{1.5em}{.3mm}}
+\DeclareMathOperator{\rank}{rank}
+\def\balpha{\boldsymbol{\alpha}}
+% following loops stolen from djhsu
+\def\ddefloop#1{\ifx\ddefloop#1\else\ddef{#1}\expandafter\ddefloop\fi}
+% \bbA, \bbB, ...
+\def\ddef#1{\expandafter\def\csname bb#1\endcsname{\ensuremath{\mathbb{#1}}}}
+\ddefloop ABCDEFGHIJKLMNOPQRSTUVWXYZ\ddefloop
+
+% \cA, \cB, ...
+\def\ddef#1{\expandafter\def\csname c#1\endcsname{\ensuremath{\mathcal{#1}}}}
+\ddefloop ABCDEFGHIJKLMNOPQRSTUVWXYZ\ddefloop
+
+% \vA, \vB, ..., \va, \vb, ...
+\def\ddef#1{\expandafter\def\csname v#1\endcsname{\ensuremath{\boldsymbol{#1}}}}
+\ddefloop ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz\ddefloop
+
+% \valpha, \vbeta, ...,  \vGamma, \vDelta, ...,
+\def\ddef#1{\expandafter\def\csname v#1\endcsname{\ensuremath{\boldsymbol{\csname #1\endcsname}}}}
+\ddefloop {alpha}{beta}{gamma}{delta}{epsilon}{varepsilon}{zeta}{eta}{theta}{vartheta}{iota}{kappa}{lambda}{mu}{nu}{xi}{pi}{varpi}{rho}{varrho}{sigma}{varsigma}{tau}{upsilon}{phi}{varphi}{chi}{psi}{omega}{Gamma}{Delta}{Theta}{Lambda}{Xi}{Pi}{Sigma}{varSigma}{Upsilon}{Phi}{Psi}{Omega}{ell}\ddefloop
+
+\newcommand\T{{\scriptscriptstyle\mathsf{T}}}
+\def\diag{\textup{diag}}
+
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+\def\SPAN{\textup{span}}
+\def\tu{\textup{u}}
+\def\R{\mathbb{R}}
+\def\E{\mathbb{E}}
+\def\Z{\mathbb{Z}}
+\def\be{\mathbf{e}}
+\def\nf{\nabla f}
+\def\veps{\varepsilon}
+\def\cl{\textup{cl}}
+\def\inte{\textup{int}}
+\def\dom{\textup{dom}}
+\def\Rad{\textup{Rad}}
+\def\lsq{\ell_{\textup{sq}}}
+\def\hcR{\widehat{\cR}}
+\def\hcRl{\hcR_\ell}
+\def\cRl{\cR_\ell}
+\def\hcE{\widehat{\cE}}
+\def\cEl{\cE_\ell}
+\def\hcEl{\hcE_\ell}
+\def\eps{\epsilon}
+\def\1{\mathds{1}}
+\newcommand{\red}[1]{{\color{red} #1}}
+\newcommand{\blue}[1]{{\color{blue} #1}}
+\def\srelu{\sigma_{\textup{r}}}
+\def\vsrelu{\vec{\sigma_{\textup{r}}}}
+\def\vol{\textup{vol}}
+\def\sr{\sigma_r}
+\def\hw{\textbf{[\texttt{hw3}]}\xspace}
+\def\hwcode{\textbf{[\texttt{hw3code}]}\xspace}
+
+
+\newcommand{\ip}[2]{\left\langle #1, #2 \right \rangle}
+\newcommand{\mjt}[1]{{\color{blue}\emph{\textbf{[MJT:}~#1~\textbf{]}}}}
+
+\newcommand{\tildephi}{\psi}
+
+
+\newtheorem{fact}{Fact}
+\newtheorem{lemma}{Lemma}
+\newtheorem{claim}{Claim}
+\newtheorem{proposition}{Proposition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}{Corollary}
+\newtheorem{condition}{Condition}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}{Remark}
+\newtheorem{example}{Example}
+
+
+
+\newenvironment{Q}
+{%
+\clearpage
+\item
+}
+{%
+\phantom{s}%lol doesn't work
+\bigskip%
+\noindent\textbf{Solution.}
+}
+
+\title{CSCI-GA.2565 --- Homework 3}
+\author{\emph{your NetID here}}
+\date{Version 1.1}
+
+\begin{document}
+\maketitle
+
+\noindent\textbf{Instructions.}
+  \begin{itemize}
+    \item
+      \textbf{Due date.}
+      Homework is due \textbf{Wednesday, March 19, at noon EST}.
+
+    \item
+      \textbf{Gradescope submission.}
+      Everyone must submit individually at gradescope under \texttt{hw3} and \texttt{hw3code}:
+      \texttt{hw3code} is just python code, whereas \texttt{hw3} contains everything else.
+      For clarity, problem parts are annotated with where the corresponding submissions go.
+
+
+      \begin{itemize}
+        \item
+          \textbf{Submitting \texttt{hw3}.}
+          \texttt{hw3} must be submitted as a single PDF file, and typeset in some way,
+          for instance using \LaTeX, Markdown, Google Docs, MS Word; you can even use an OCR
+          package (or a modern multi-modal LLM) to convert handwriting to \LaTeX and then clean
+          it up for submission.  Graders reserve the right to award zero points for
+          solutions they consider illegible.
+
+        \item
+          \textbf{Submitting \texttt{hw3code}.}
+          Only upload the two python files \texttt{hw3.py} and \texttt{hw3\_utils.py};
+          don't upload a zip file or additional files.
+
+      \end{itemize}
+
+    \item
+      \textbf{Consulting LLMs and friends.}
+      You may discuss with your peers and you may use LLMs.  \emph{However,} you are strongly
+      advised to make a serious attempt on all problems alone, and if you consult anyone,
+      make a serious attempt to understand the solution alone afterwards.
+      You must document credit assignment in a special final question in the homework.
+
+    \item
+      \textbf{Evaluation.}
+      We reserve the right to give a 0 to a submission which violates the intent of the assignment
+      and is morally equivalent to a blank response.
+      \begin{itemize}
+        \item
+          \texttt{hw3code:} your grade is what the autograder gives you;
+          note that you may re-submit as many times as you like until the deadline.
+          However, we may reduce your auto-graded score if your solution simply hard-codes answers.
+
+        \item
+          \texttt{hw3:} you can receive $0$ points for a blank solution, an illegible solution,
+          or a solution which does not correctly mark problem parts with boxes in the gradescope
+          interface (equivalent to illegibility).
+          All other solutions receive full points, \emph{however} the graders do leave feedback
+          so please check afterwards even if you received a perfect score.
+
+      \end{itemize}
+
+    \item
+      \textbf{Regrades.}  Use the grade scope interface.
+
+    \item
+      \textbf{Late days.}
+      We track 3 late days across the semester per student.
+
+    \item
+      \textbf{Library routines.}
+      Coding problems come with suggested ``library routines''; we include these to reduce
+      your time fishing around APIs, but you are free to use other APIs.
+  \end{itemize}
+
+\noindent\textbf{Version history.}
+\begin{enumerate}
+    \item[1.0.] Initial version.
+    \item[1.1.] Included \hw and \hwcode tags.
+\end{enumerate}
+
+\begin{enumerate}[font={\Large\bfseries},leftmargin=0pt]
+
+\begin{Q}
+    \textbf{On initialization.}
+
+    Consider a 2-layer network
+    \begin{align*}
+        f(\vx;\vW,\vv)=\sum_{j=1}^{m}v_j\sigma\del{\langle\vw_j,\vx\rangle},
+    \end{align*}
+    where $\vx\in \mathbb{R}^d$, $\vW\in \mathbb{R}^{m\times d}$ with rows $\vw_j^\top$, and $\vv\in \mathbb{R}^m$. For simplicity, the network has a single output, and bias terms are omitted.
+
+    Given a data example $(\vx,y)$ and a loss function $\ell$, consider the empirical risk
+    \begin{align*}
+        \hcR(\vW,\vv)=\ell\del{f(\vx;\vW,\vv),y}.
+    \end{align*}
+    Only a single data example will be considered in this problem;
+    the same analysis extends to multiple examples by taking averages.
+
+    \begin{enumerate}
+        \item \hw For each $1\le j\le m$, derive $\partial\hcR/\partial v_j$ and $\partial\hcR/\partial \vw_j$.
+
+        \item \hw Consider gradient descent which starts from some $\vW^{(0)}$ and $\vv^{(0)}$, and at step $t\ge0$, updates the weights for each $1\le j\le m$ as follows:
+        \begin{align*}
+            \vw_j^{(t+1)}=\vw_j^{(t)}-\eta \frac{\partial\hcR}{\partial \vw_j^{(t)}},\qquad \mathrm{and}\qquad v_j^{(t+1)}=v_j^{(t)}-\eta \frac{\partial\hcR}{\partial v_j^{(t)}}.
+        \end{align*}
+
+        Suppose there exists two hidden units $p,q\in\{1,2,\ldots,m\}$ such that $\vw_p^{(0)}=\vw_q^{(0)}$ and $v_p^{(0)}=v_q^{(0)}$. Prove by induction that for any step $t\ge0$, it holds that $\vw_p^{(t)}=\vw_q^{(t)}$ and $v_p^{(t)}=v_q^{(t)}$.
+
+        \textbf{Remark:} as a result, if the neural network is initialized symmetrically, then such a symmetry may persist during gradient descent, and thus the representation power of the network will be limited.
+
+        \item \hw Random initialization is a good way to break symmetry. Moreover, proper random initialization also preserves the squared norm of the input, as formalized below.
+
+        First consider the identity activation $\sigma(z)=z$. For each $1\le j\le m$ and $1\le k\le d$, initialize $w_{j,k}^{(0)}\sim\cN(0,1/m)$ (i.e., normal distribution with mean $\mu=0$ and variance $\sigma^2=1/m$).
+        Prove that
+        \begin{align*}
+            \mathbb{E}\sbr[2]{\,\enVert[1]{\vW^{(0)}\vx}_2^2\,}=\|\vx\|_2^2.
+        \end{align*}
+
+        \textbf{Remark:} This is similar to \texttt{torch.nn.init.kaiming\_normal\_()}.
+
+        Next consider the ReLU activation $\sigma_r(z)=\max\{0,z\}$. For each $1\le j\le m$ and $1\le k\le d$, initialize $w_{j,k}^{(0)}\sim\cN(0,2/m)$. Prove that
+        \begin{align*}
+            \mathbb{E}\sbr[2]{\,\enVert[1]{\sigma_r(\vW^{(0)}\vx)}_2^2\,}=\|\vx\|_2^2.
+        \end{align*}
+
+        \textbf{Hint:} linear combinations of Gaussians are again Gaussian!
+        For the second part (with ReLU), consider the symmetry of a Gaussian around 0.
+    \end{enumerate}
+\end{Q}
+
+\begin{Q}
+    \textbf{ResNet.}
+
+    In this problem, you will implement a simplified ResNet. You do not need to change arguments which are not mentioned here (but you of course could try and see what happens).
+    \begin{enumerate}
+        \item \hwcode Implement a class \texttt{Block}, which is a building block of ResNet. It is described in \citep{resnet} Figure 2.
+
+        The input to \texttt{Block} is of shape $(N,C,H,W)$, where $N$ denotes the batch size, $C$ denotes the number of channels, and $H$ and $W$ are the height and width of each channel. For each data example $\vx$ with shape $(C,H,W)$, the output of \texttt{block} is
+        \begin{align*}%\label{eq:block}
+            \texttt{Block}(\vx)=\sigma_r\del{\vx+f(\vx)},
+        \end{align*}
+        where $\sigma_r$ denotes the ReLU activation, and $f(\vx)$ also has shape $(C,H,W)$ and thus can be added to $\vx$. In detail, $f$ contains the following layers.
+        \begin{enumerate}
+            \item A \texttt{Conv2d} with $C$ input channels, $C$ output channels, kernel size 3, stride 1, padding 1, and no bias term.
+            \item A \texttt{BatchNorm2d} with $C$ features.
+            \item A ReLU layer.
+            \item Another \texttt{Conv2d} with the same arguments as i above.
+            \item Another \texttt{BatchNorm2d} with $C$ features.
+        \end{enumerate}
+        Because $3\times3$ kernels and padding 1 are used, the convolutional layers do not change the shape of each channel. Moreover, the number of channels are also kept unchanged. Therefore $f(\vx)$ does have the same shape as $\vx$.
+
+        Also, implement the option to use SiLU instead of ReLU, and \texttt{LayerNorm} instead of \texttt{BatchNorm2d}.
+
+        Additional instructions are given in doscstrings in \texttt{hw3.py}.
+
+        \item \hw Explain why a \texttt{Conv2d} layer does not need a bias term if it is followed by a \texttt{BatchNorm2d} layer.
+
+        \item \hwcode Implement a (shallow) \texttt{ResNet} consists of the following parts:
+        \begin{enumerate}
+            \item A \texttt{Conv2d} with 1 input channel, $C$ output channels, kernel size 3, stride 2, padding 1, and no bias term.
+            \item A \texttt{BatchNorm2d} with $C$ features.
+            \item A ReLU layer.
+            \item A \texttt{MaxPool2d} with kernel size 2.
+            \item A \texttt{Block} with $C$ channels.
+            \item An \texttt{AdaptiveAvgPool2d} which for each channel takes the average of all elements.
+            \item A \texttt{Linear} with $C$ inputs and 10 outputs.
+        \end{enumerate}
+        Also, implement the option to use SiLU instead of ReLU, and \texttt{LayerNorm} instead of \texttt{BatchNorm2d}.
+
+        Additional instructions are given in doscstrings in \texttt{hw3.py}.
+
+        \item \hwcode Implement \texttt{fit\_and\_validate} for use in
+            the next part.  Please do not shuffle the
+            inputs when batching in this part!  The utility
+            function \texttt{loss\_batch} will be useful. See
+            the docstrings in \texttt{hw3.py} and \texttt{hw3\_util.py} for details.
+
+        \item \hw Using \texttt{fit\_and\_validate()}, train a \texttt{ResNet} with 16 channels on the data given by \texttt{hw3\_utils.torch\_digits()}, using the cross entropy loss and SGD with learning rate 0.005 and batch size 16, for 30 epochs. Plot the epochs vs training and validation cross entropy losses. Since there is some inconsistency due to random initialization, try 3 runs and have 3 plots.
+           Repeat this for each combination of ReLU/SiLU and \texttt{BatchNorm2d}/\texttt{LayerNorm}, for a total of 12 plots. Include these 12 plots in your written submission.
+
+           Do you notice any significant differences/improvements between the different combinations of activation functions and normalization layers? Include at least one observation in your written submission.
+    \end{enumerate}
+\end{Q}
+    
+\begin{Q}
+    \textbf{RBF kernel and nearest neighbors.}
+    \begin{enumerate}
+        \item \hw Recall that given data examples $((\vx_i,y_i))_{i=1}^n$ and an optimal dual solution $(\hat{\alpha}_i)_{i=1}^n$, the RBF kernel SVM makes a prediction as follows:
+        \begin{align*}
+            f_{\sigma}(\vx)=\sum_{i=1}^{n}\hat{\alpha}_iy_i\exp\del{-\frac{\|\vx-\vx_i\|_2^2}{2\sigma^2}}=\sum_{i\in S}^{}\hat{\alpha}_iy_i\exp\del{-\frac{\|\vx-\vx_i\|_2^2}{2\sigma^2}},
+        \end{align*}
+        where $S\subset\{1,2,\ldots,n\}$ is the set of indices of support vectors.
+
+        Given an input $\vx$, let $T:=\argmin_{i\in S}\|\vx-\vx_i\|_2$ denote the set of closest support vectors to $\vx$, and let $\rho:=\min_{i\in S}\|\vx-\vx_i\|_2$ denote this smallest distance.  (In other words, $T := \{ i \in S : \|\vx-\vx_i\| = \rho \}$.) Prove that
+        \begin{align*}
+            \lim_{\sigma\to0}\frac{f_{\sigma}(\vx)}{\exp\del{-\rho^2/2\sigma^2}}=\sum_{i\in T}^{}\hat{\alpha}_iy_i.
+        \end{align*}
+
+        \textbf{Remark:} in other words, when the bandwidth $\sigma$ becomes small enough, RBF kernel SVM is almost the 1-nearest neighbor predictor with the set of support vectors as the training set.
+
+        \item \hw Consider the XOR dataset:
+        \begin{align*}
+            \vx_1=(+1,+1),\quad y_1=+1, \\
+            \vx_2=(-1,+1),\quad y_2=-1, \\
+            \vx_3=(-1,-1),\quad y_3=+1, \\
+            \vx_4=(+1,-1),\quad y_4=-1.
+        \end{align*}
+        Verify that $\hat{\balpha}=(1/\alpha,1/\alpha,1/\alpha,1/\alpha)$ is an optimal dual solution to the RBF kernel SVM, where
+        \begin{align*}
+            \alpha=\del{1-\exp\del{-\frac{\|\vx_1-\vx_2\|_2^2}{2\sigma^2}}}^2=\del{1-\exp\del{-\frac{2}{\sigma^2}}}^2>0.
+        \end{align*}
+
+        \textbf{Hint:} prove that the gradient of the dual function is $\boldsymbol{0}$ at $\hat{\balpha}$. Since the dual function is concave, and $\hat{\balpha}>\boldsymbol{0}$, it follows that $\hat{\balpha}$ is an optimal dual solution.
+
+        \textbf{Remark:} in other words, all four data examples are mapped to support vectors in the reproducing kernel Hilbert space. In light of (a), when $\sigma$ is small enough, $f_{\sigma}(\vx)$ is almost the 1-nearest neighbor predictor on the XOR dataset. In fact, it is also true for large $\sigma$, due to the symmetry of the XOR data.
+    \end{enumerate}
+\end{Q}
+
+\begin{Q}
+  \textbf{\Large LLM Use and Other Sources.}
+    
+    \hw Please document, in detail, all your sources, including include LLMs, friends,
+    internet resources, etc.  For example:
+    \begin{enumerate}
+      \item[1a.] I asked my friend, then I found a different way to derive the same solution.
+      \item[1b.] ChatGPT 4o solved the problem in one shot, but then I rewrote it once one
+        paper, and a few days later tried to re-derive an answer from scratch.
+      \item[1c.] I accidentally found this via a google search,
+        and had trouble forgetting the answer I found, but still typed it from scratch
+        without copy-paste.
+      \item[1d.] \dots
+      \item[\vdots] 
+      \item[4.] I used my solution to hw1 problem 5 to write this answer.
+    \end{enumerate}
+    
+\end{Q}
+
+\end{enumerate}
+
+\newpage
+
+\bibliography{bib}
+
+\end{document}
